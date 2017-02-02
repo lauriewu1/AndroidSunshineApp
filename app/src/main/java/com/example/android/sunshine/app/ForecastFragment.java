@@ -122,6 +122,11 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         return rootView;
     }
 
+    void onLocationChanged(){
+        updateWeather();
+        getLoaderManager().restartLoader(FORECAST_LOADER,null,this);
+    }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         getLoaderManager().initLoader(FORECAST_LOADER, null, this);
@@ -134,11 +139,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         weatherTask.execute(location);
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        updateWeather();
-    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
