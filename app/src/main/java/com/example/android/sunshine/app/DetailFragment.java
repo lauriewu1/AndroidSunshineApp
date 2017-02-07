@@ -170,7 +170,7 @@ public class DetailFragment extends Fragment implements
             // Read weather condition ID from cursor so we know which weather image to display
             int weatherId = data.getInt(COL_WEATHER_CONDITION_ID);
 
-            // Use weather art image
+            // get resource id to get colored icon then set that image in image view
             mIconView.setImageResource(Utility.getArtResourceForWeatherCondition(weatherId));
 
             // Read date from cursor and update views for day of week and date
