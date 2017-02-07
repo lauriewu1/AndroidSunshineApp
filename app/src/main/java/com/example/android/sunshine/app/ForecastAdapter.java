@@ -77,14 +77,14 @@ public class ForecastAdapter extends CursorAdapter {
         int viewType = getItemViewType(cursor.getPosition());
         switch(viewType){
             case VIEW_TYPE_TODAY:{
-                //get weather icon and set image
+                //get weather icon and set color image
                 viewHolder.iconView.setImageResource(Utility.getArtResourceForWeatherCondition(
                         cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID)));
                 break;
             }
 
             case VIEW_TYPE_FUTURE_DAY:{
-                //get weather icon and set image
+                //get weather icon and set grey image
                 viewHolder.iconView.setImageResource(Utility.getIconResourceForWeatherCondition(
                         cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID)));
                 break;
