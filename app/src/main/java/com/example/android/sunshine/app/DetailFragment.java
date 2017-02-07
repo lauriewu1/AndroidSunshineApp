@@ -164,13 +164,14 @@ public class DetailFragment extends Fragment implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        //at this stage, we get a cursor back with the data we need.
         if (data != null && data.moveToFirst()) {
 
-            // Read weather condition ID from cursor
+            // Read weather condition ID from cursor so we know which weather image to display
             int weatherId = data.getInt(COL_WEATHER_CONDITION_ID);
 
-            // Use Placeholder icon
-            mIconView.setImageResource(R.drawable.ic_launcher);
+            // Use weather art image
+            mIconView.setImageResource(Utility.getArtResourceForWeatherCondition(weatherId));
 
             // Read date from cursor and update views for day of week and date
             long date = data.getLong(COL_WEATHER_DATE);
