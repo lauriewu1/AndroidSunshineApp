@@ -27,12 +27,32 @@ import com.example.android.sunshine.app.data.WeatherContract.WeatherEntry;
  */
 public class WeatherDbHelper extends SQLiteOpenHelper {
 
+    private static WeatherDbHelper mInstance = null;
+
     // If you change the database schema, you must increment the database version.
     private static final int DATABASE_VERSION = 2;
 
-    static final String DATABASE_NAME = "weather.db";
+    //    static final String DATABASE_NAME = "weather.db";
+    private static final String DATABASE_NAME = "weather.db";
 
-    public WeatherDbHelper(Context context) {
+    // Use the application context, which will ensure that you
+    // don't accidentally leak an Activity's context.
+    // See this article for more information: http://bit.ly/6LRzfx
+    public static WeatherDbHelper getInstance(Context context) {
+
+        if (mInstance == null)
+            mInstance = new WeatherDbHelper(context.getApplicationContext());
+        return mInstance;
+    }
+
+    /**
+     * Constructor should be private to prevent direct instantiation.
+     * make call to static factory method "getInstance()" instead.
+     */
+//    public WeatherDbHelper(Context context) {
+//        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+//    }
+    private WeatherDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 

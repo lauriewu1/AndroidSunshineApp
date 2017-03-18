@@ -137,7 +137,8 @@ public class WeatherProvider extends ContentProvider {
      */
     @Override
     public boolean onCreate() {
-        mOpenHelper = new WeatherDbHelper(getContext());
+        // mOpenHelper = new WeatherDbHelper(getContext());
+        mOpenHelper = WeatherDbHelper.getInstance(getContext());
         return true;
     }
 
