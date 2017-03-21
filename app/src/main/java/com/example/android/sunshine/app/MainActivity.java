@@ -37,7 +37,11 @@ public class MainActivity extends ActionBarActivity implements ForecastFragment.
                                 DETAILFRAGMENT_TAG).commit();
             }
         } else {
+            //is one pane mode
             mTwoPane = false;
+            //elevation 0 so it doesn't cast a shadow, so forecast list and action bar appears to
+            //be on the same plane.
+            getSupportActionBar().setElevation(0f);
 //            //without this if statement phone version of app doesn't work, shows blank forecast list
 //            if (savedInstanceState == null) {
 //                getSupportFragmentManager().beginTransaction()
@@ -45,8 +49,11 @@ public class MainActivity extends ActionBarActivity implements ForecastFragment.
 //                                FORECASTFRAGMENT_TAG ).commit();
 //            }
         }
+        //this 3 line of code is for getting to forecast fragment to use the
+        // method setUseTodayLayout to set the view type of today forecast's list item
         ForecastFragment forecastFragment = ((ForecastFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.fragment_forecast));
+        //if is one pane mode, use special today layout
         forecastFragment.setUseTodayLayout(!mTwoPane);
     }
 
