@@ -68,7 +68,13 @@ public class SettingsActivity extends PreferenceActivity
         return true;
     }
 
+    //getParentActivityIntent didn't exist prior to Jelly Bean, so add this line.
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    //override the getParentActivityIntent method, the system calls it to get parent activity itent
+    //for the up button behavior. getParentActivityIntent from super class this should create a new
+    //intent to main activity. FLAG_ACTIVITY_CLEAR_TOP indicates we should check if the main
+    //activity is already running in our task, and to use that one instead of creating a new main
+    //activity instance.
     @Override
     public Intent getParentActivityIntent() {
         return super.getParentActivityIntent().addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

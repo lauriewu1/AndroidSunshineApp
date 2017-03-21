@@ -25,6 +25,7 @@ import com.example.android.sunshine.app.data.WeatherContract;
 //cursor, as required by CursorLoader.
 public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
+
     // first step, created a loader ID integer constant. These have to be unique for every loader
     // you're using in your activity.
     private static final int FORECAST_LOADER = 0;
