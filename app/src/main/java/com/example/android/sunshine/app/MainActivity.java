@@ -11,7 +11,7 @@ import android.view.MenuItem;
 public class MainActivity extends ActionBarActivity implements ForecastFragment.Callback {
 
     private final String LOG_TAG = MainActivity.class.getSimpleName();
-    private static final String FOREFACEFRAGMENT_TAG = "FFTAG";
+    private static final String FORECASTFRAGMENT_TAG = "FFTAG";
     private static final String DETAILFRAGMENT_TAG = "DFTAG";
 
     private boolean mTwoPane;
@@ -38,12 +38,16 @@ public class MainActivity extends ActionBarActivity implements ForecastFragment.
             }
         } else {
             mTwoPane = false;
-            if (savedInstanceState == null) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_forecast, new ForecastFragment(),
-                                FOREFACEFRAGMENT_TAG).commit();
-            }
+//            //without this if statement phone version of app doesn't work, shows blank forecast list
+//            if (savedInstanceState == null) {
+//                getSupportFragmentManager().beginTransaction()
+//                        .replace(R.id.fragment_forecast, new ForecastFragment(),
+//                                FORECASTFRAGMENT_TAG ).commit();
+//            }
         }
+        ForecastFragment forecastFragment = ((ForecastFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.fragment_forecast));
+        forecastFragment.setUseTodayLayout(!mTwoPane);
     }
 
     @Override
