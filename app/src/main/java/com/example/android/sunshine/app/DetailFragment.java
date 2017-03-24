@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.android.sunshine.app.data.DirectionView;
 import com.example.android.sunshine.app.data.WeatherContract;
 
 /**
@@ -81,6 +82,7 @@ public class DetailFragment extends Fragment implements
     private TextView mHumidityView;
     private TextView mWindView;
     private TextView mPressureView;
+    private DirectionView mWindDirectionView;
 
     public DetailFragment(){
         //add menu to fragment by setting a flag that this fragment
@@ -109,6 +111,7 @@ public class DetailFragment extends Fragment implements
         mHumidityView = (TextView) rootView.findViewById(R.id.detail_humidity_textview);
         mWindView = (TextView) rootView.findViewById(R.id.detail_wind_textview);
         mPressureView = (TextView) rootView.findViewById(R.id.detail_pressure_textview);
+        mWindDirectionView = (DirectionView) rootView.findViewById(R.id.detail_wind_direction);
         return rootView;
     }
 
@@ -229,6 +232,7 @@ public class DetailFragment extends Fragment implements
             float windSpeedStr = data.getFloat(COL_WEATHER_WIND_SPEED);
             float windDirStr = data.getFloat(COL_WEATHER_DEGREES);
             mWindView.setText(Utility.getFormattedWind(getActivity(), windSpeedStr, windDirStr));
+            mWindDirectionView.setDirection(windDirStr);
 
             // Read pressure from cursor and update view
             float pressure = data.getFloat(COL_WEATHER_PRESSURE);
