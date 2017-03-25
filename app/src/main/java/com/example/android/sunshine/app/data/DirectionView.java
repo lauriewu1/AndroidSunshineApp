@@ -55,13 +55,20 @@ public class DirectionView extends View {
         invalidate();
     }
 
+    private void setCirclePaint() {
+        int color = getResources().getColor(R.color.sunshine_light_blue);
+        mPaint.setColor(color);
+        mPaint.setStyle(Paint.Style.FILL);
+    }
+
     private void buildCirclePath() {
         int width = getWidth();
         int height = getHeight();
-        int color = getResources().getColor(R.color.sunshine_light_blue);
 
-        mPaint.setColor(color);
-        mPaint.setStyle(Paint.Style.FILL);
+//        int color = getResources().getColor(R.color.sunshine_light_blue);
+
+//        mPaint.setColor(color);
+//        mPaint.setStyle(Paint.Style.FILL);
         mCircle.addCircle(width / 2, height / 2, Math.min(width, height) / 2, Path.Direction.CCW);
     }
 
@@ -136,13 +143,20 @@ public class DirectionView extends View {
 
         //mDegrees is negative when view is first constructed
         if (mDegrees != -1) {
+            //set the paint for circle
+            setCirclePaint();
+            //if mCircle object is not drawn
             if (mCircle.isEmpty()) {
+                //draw the mCircle object
                 buildCirclePath();
-                ;
-                canvas.drawPath(mCircle, mPaint);
             }
+            //draw the pattern of mCircle and mPaint(for the circle) onto screen
+            canvas.drawPath(mCircle, mPaint);
+            //set the mDirection and mPaint object for the line
             buildDirectionPath();
+            //draw the mDirection and mPaint onto screen
             canvas.drawPath(mDirection, mPaint);
         }
     }
 }
+
