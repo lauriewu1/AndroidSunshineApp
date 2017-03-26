@@ -89,7 +89,7 @@
                 android:layout_marginLeft="16dp"
                 android:minWidth="100dp"
                 android:minHeight="100dp"
-
+                android:focusable="true"
                 />
         </LinearLayout>
 

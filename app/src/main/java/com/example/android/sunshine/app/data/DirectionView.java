@@ -7,6 +7,8 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityManager;
 
 import com.example.android.sunshine.app.R;
 
@@ -23,6 +25,7 @@ public class DirectionView extends View {
     private Path mDirection;
     private Paint mPaint;
     private float mDegrees = -1;
+    private String mDirStr;
 
     //constructor through code
     public DirectionView(Context context) {
@@ -53,6 +56,13 @@ public class DirectionView extends View {
     public void setDirection(float degrees) {
         mDegrees = degrees;
         invalidate();
+
+        final AccessibilityManager accessibilityManager = (AccessibilityManager)
+                getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
+
+        if (accessibilityManager.isEnabled()) {
+            sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED);
+        }
     }
 
     private void setCirclePaint() {
@@ -85,28 +95,28 @@ public class DirectionView extends View {
         mDirection.moveTo(width / 2, height / 2);
 
         if (mDegrees >= 337.5 || mDegrees < 22.5) {
-            //direction = "N";
+            mDirStr = "compass direction North";
             mDirection.lineTo(width / 2, 0);
         } else if (mDegrees >= 22.5 && mDegrees < 67.5) {
-            //direction = "NE";
+            mDirStr = "compass direction North East";
             mDirection.lineTo(width, 0);
         } else if (mDegrees >= 67.5 && mDegrees < 112.5) {
-            //direction = "E";
+            mDirStr = "compass direction East";
             mDirection.lineTo(width, height / 2);
         } else if (mDegrees >= 112.5 && mDegrees < 157.5) {
-            //direction = "SE";
+            mDirStr = "compass direction South East";
             mDirection.lineTo(width, height);
         } else if (mDegrees >= 157.5 && mDegrees < 202.5) {
-            //direction = "S";
+            mDirStr = "compass direction South";
             mDirection.lineTo(width / 2, height);
         } else if (mDegrees >= 202.5 && mDegrees < 247.5) {
-            //direction = "SW";
+            mDirStr = "compass direction South West";
             mDirection.lineTo(0, height);
         } else if (mDegrees >= 247.5 && mDegrees < 292.5) {
-            //direction = "W";
+            mDirStr = "compass direction West";
             mDirection.lineTo(0, height / 2);
         } else if (mDegrees >= 292.5 || mDegrees < 22.5) {
-            //direction = "NW";
+            mDirStr = "compass direction North West";
             mDirection.lineTo(0, 0);
         }
 
@@ -156,7 +166,14 @@ public class DirectionView extends View {
             buildDirectionPath();
             //draw the mDirection and mPaint onto screen
             canvas.drawPath(mDirection, mPaint);
+
         }
+    }
+
+    @Override
+    public boolean dispatchPopulateAccessibilityEvent(AccessibilityEvent ev) {
+        ev.getText().add(mDirStr);
+        return true;
     }
 }
 
