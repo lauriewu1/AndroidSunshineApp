@@ -2,12 +2,15 @@ package com.example.android.sunshine.app.sync;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SyncRequest;
 import android.content.SyncResult;
@@ -16,10 +19,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.text.format.Time;
 import android.util.Log;
 
 import com.example.android.sunshine.app.BuildConfig;
+import com.example.android.sunshine.app.MainActivity;
 import com.example.android.sunshine.app.R;
 import com.example.android.sunshine.app.Utility;
 import com.example.android.sunshine.app.data.WeatherContract;
@@ -36,8 +42,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Vector;
 
-import static android.text.format.DateUtils.DAY_IN_MILLIS;
-
 public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
     public final String LOG_TAG = SunshineSyncAdapter.class.getSimpleName();
 
@@ -45,6 +49,9 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
     // 60 seconds (1 minute)  180 = 3 hours
     public static final int SYNC_INTERVAL = 60 * 180;
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL / 3;
+    private static final long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
+    private static final int WEATHER_NOTIFICATION_ID = 3004;
+
     private static final String[] NOTIFY_WEATHER_PROJECTION = new String[]{
             WeatherContract.WeatherEntry.COLUMN_WEATHER_ID,
             WeatherContract.WeatherEntry.COLUMN_MAX_TEMP,
@@ -338,12 +345,31 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                         Utility.formatTemperature(context, low));
 
                 //build your notification here.
-//                NotificationCompat.Builder mBuilder =
-//                        new NotificationCompat.Builder(getContext())
-//                        .setSmallIcon(iconId)
-//                        .setContentTitle(title)
-//                        .setContentText(contentText);
+                //NotificationCompatBuilder is a very convenient way to build backward-
+                //compatible notifications. Just throw in the necessary data.
+                NotificationCompat.Builder mBuilder =
+                        new NotificationCompat.Builder(getContext())
+                                .setSmallIcon(iconId)
+                                .setContentTitle(title)
+                                .setContentText(contentText);
 
+                //open the app when user clicks on the notification.
+                Intent resultIntent = new Intent(context, MainActivity.class);
+
+                //The stack builder object will contain an artificial back stack
+                //for the started Activity. This ensures that navigating backward from
+                //the Activity leads out of your application to the Home Screen.
+                TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+                stackBuilder.addNextIntent(resultIntent);
+                PendingIntent resultPendingIntent =
+                        stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+                mBuilder.setContentIntent(resultPendingIntent);
+
+                NotificationManager mNotificationManager = (NotificationManager)
+                        getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+
+                //WEATHER_NOTIFICATION_ID allows you to update the notification later on.
+                mNotificationManager.notify(WEATHER_NOTIFICATION_ID, mBuilder.build());
 
                 //refreshing last sync
                 SharedPreferences.Editor editor = prefs.edit();
