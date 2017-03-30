@@ -303,6 +303,20 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                 getContext().getContentResolver().bulkInsert(WeatherContract.WeatherEntry.CONTENT_URI, cvArray);
             }
 
+
+//            Calendar cal = Calendar.getInstance(); //Get's a calendar object with the current time.
+//            cal.add(Calendar.DATE, -1); //Signifies yesterday's date
+//            String yesterdayDate = WeatherContract.getDbDateString(cal.getTime());
+//            getContext().getContentResolver().delete(WeatherEntry.CONTENT_URI,
+//                    WeatherEntry.COLUMN_DATETEXT + " <= ?",
+//                    new String[] {yesterdayDate});
+
+            //delete old data so we don't build up an endless history, we calculate what data are
+            //the past by using calendar class
+            getContext().getContentResolver().delete(WeatherContract.WeatherEntry.CONTENT_URI,
+                    WeatherContract.WeatherEntry.COLUMN_DATE + " <= ?",
+                    new String[]{Long.toString(dayTime.setJulianDay(julianStartDay - 1))});
+
             notifyWeather();
 
             Log.d(LOG_TAG, "Sunshine Service Complete. " + cVVector.size() + " Inserted");
