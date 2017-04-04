@@ -1,9 +1,11 @@
 package com.example.android.sunshine.app;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -27,7 +29,8 @@ import com.example.android.sunshine.app.sync.SunshineSyncAdapter;
  */
 // second step, have forecast fragment implement the loader manager loader callbacks with type
 //cursor, as required by CursorLoader.
-public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     public static final String LOG_TAG = ForecastFragment.class.getSimpleName();
     private ForecastAdapter mForecastAdapter;
@@ -89,6 +92,22 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         super.onCreate(savedInstanceState);
         // Add this line in order for this fragment to handle menu events.
         setHasOptionsMenu(true);
+    }
+
+    //Register OnSharedPreferenceChangeListener
+    @Override
+    public void onResume() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        sp.registerOnSharedPreferenceChangeListener(this);
+        super.onResume();
+    }
+
+    //unregister OnSharedPreferenceChangeListener
+    @Override
+    public void onPause() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        sp.unregisterOnSharedPreferenceChangeListener(this);
+        super.onPause();
     }
 
     @Override
@@ -291,6 +310,12 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         }
     }
 
+    //we want to release any resources that we might be using.
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mForecastAdapter.swapCursor(null);
+    }
+
 
     /*
         Updates the empty list view with contextually relevant information that the user can
@@ -302,18 +327,30 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             if (null != tv) {
                 // if cursor is empty, why? do we have an invalid location
                 int message = R.string.empty_forecast_list;
-                if (!Utility.isNetworkAvailable(getActivity())) {
-                    message = R.string.empty_forecast_list_no_network;
+                @SunshineSyncAdapter.LocationStatus int location =
+                        Utility.getLocationStatus(getActivity());
+                switch (location) {
+                    case SunshineSyncAdapter.LOCATION_STATUS_SERVER_DOWN:
+                        message = R.string.empty_forecast_list_server_down;
+                        break;
+                    case SunshineSyncAdapter.LOCATION_STATUS_SERVER_INVALID:
+                        message = R.string.empty_forecast_list_server_error;
+                        break;
+                    default:
+                        if (!Utility.isNetworkAvailable(getActivity())) {
+                            message = R.string.empty_forecast_list_no_network;
+                        }
                 }
                 tv.setText(message);
             }
         }
     }
 
-    //we want to release any resources that we might be using.
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        mForecastAdapter.swapCursor(null);
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(getString(R.string.pref_location_status_key))) {
+            updateEmptyView();
+        }
     }
 
 }
