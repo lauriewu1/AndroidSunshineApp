@@ -132,6 +132,28 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
 
+            /////handle invalid location in onPerformSync() instead of getWeatherDataFromJSON/////
+            int responseCode = urlConnection.getResponseCode();
+            Log.v(LOG_TAG, "HTTP response code: " + responseCode);
+
+            switch (responseCode) {
+                //If the code is 200, we can continue grabbing the JSON
+                case HttpURLConnection.HTTP_OK:
+                    break;
+                //If the code is 404 or 502, we should exit early, return
+                case HttpURLConnection.HTTP_NOT_FOUND:
+                    setLocationStatus(getContext(), LOCATION_STATUS_INVALID);
+                    return;
+                case HttpURLConnection.HTTP_BAD_GATEWAY:
+                    setLocationStatus(getContext(), LOCATION_STATUS_INVALID);
+                    return;
+                default:
+                    //If we didn't get a message code, or it was some other code, exit early
+                    setLocationStatus(getContext(), LOCATION_STATUS_SERVER_DOWN);
+                    return;
+            }
+            //////////////////////////////////////////////////////////////////////////////
+
             // Read the input stream into a String
             InputStream inputStream = urlConnection.getInputStream();
             StringBuffer buffer = new StringBuffer();
@@ -231,20 +253,20 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
         try {
             JSONObject forecastJson = new JSONObject(forecastJsonStr);
             //do we have an error with either server or invalid location?
-            if (forecastJson.has(OWM_MESSAGE_CODE)) {
-                int errorCode = forecastJson.getInt(OWM_MESSAGE_CODE);
-
-                switch (errorCode) {
-                    case HttpURLConnection.HTTP_OK:
-                        break;
-                    case HttpURLConnection.HTTP_NOT_FOUND:
-                        setLocationStatus(getContext(), LOCATION_STATUS_INVALID);
-                        return;
-                    default:
-                        setLocationStatus(getContext(), LOCATION_STATUS_SERVER_DOWN);
-                        return;
-                }
-            }
+//            if (forecastJson.has(OWM_MESSAGE_CODE)) {
+//                int errorCode = forecastJson.getInt(OWM_MESSAGE_CODE);
+//
+//                switch (errorCode) {
+//                    case HttpURLConnection.HTTP_OK:
+//                        break;
+//                    case HttpURLConnection.HTTP_NOT_FOUND:
+//                        setLocationStatus(getContext(), LOCATION_STATUS_INVALID);
+//                        return;
+//                    default:
+//                        setLocationStatus(getContext(), LOCATION_STATUS_SERVER_DOWN);
+//                        return;
+//                }
+//            }
             JSONArray weatherArray = forecastJson.getJSONArray(OWM_LIST);
 
             JSONObject cityJson = forecastJson.getJSONObject(OWM_CITY);
