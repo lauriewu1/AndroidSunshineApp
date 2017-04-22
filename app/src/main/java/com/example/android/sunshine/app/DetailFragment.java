@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.android.sunshine.app.data.DirectionView;
 import com.example.android.sunshine.app.data.WeatherContract;
 
@@ -195,8 +196,15 @@ public class DetailFragment extends Fragment implements
             // Read weather condition ID from cursor so we know which weather image to display
             int weatherId = data.getInt(COL_WEATHER_CONDITION_ID);
 
-            // get resource id to get colored icon then set that image in image view
-            mIconView.setImageResource(Utility.getArtResourceForWeatherCondition(weatherId));
+//            // get resource id to get colored icon then set that image in image view
+//            mIconView.setImageResource(Utility.getArtResourceForWeatherCondition(weatherId));
+
+            //use Weather art image from the internet.
+            Glide.with(this)
+                    .load(Utility.getArtUrlForWeatherCondition(getActivity(), weatherId))
+                    .error(Utility.getArtResourceForWeatherCondition(weatherId))
+                    .crossFade()
+                    .into(mIconView);
 
             // Read date from cursor and update views for day of week and date
             long date = data.getLong(COL_WEATHER_DATE);

@@ -65,6 +65,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/list_item_icon"
             android:layout_gravity="center_horizontal"
+            android:adjustViewBounds="true"
             />
 
         <TextView

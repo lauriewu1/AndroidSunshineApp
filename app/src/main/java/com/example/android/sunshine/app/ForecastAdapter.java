@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 /**
  * {@link ForecastAdapter} exposes a list of weather forecasts
  * from a {@link android.database.Cursor} to a {@link android.widget.ListView}.
@@ -79,21 +81,34 @@ public class ForecastAdapter extends CursorAdapter {
 
         int viewType = getItemViewType(cursor.getPosition());
         int weatherId = cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID);
+        int fallbackIconId;
         switch(viewType){
             case VIEW_TYPE_TODAY:{
                 //get weather icon and set color image
-                viewHolder.iconView.setImageResource(Utility.getArtResourceForWeatherCondition(
-                        weatherId));
+//                viewHolder.iconView.setImageResource(Utility.getArtResourceForWeatherCondition(
+//                        weatherId));
+                fallbackIconId = Utility.getArtResourceForWeatherCondition(weatherId);
                 break;
             }
 
-            case VIEW_TYPE_FUTURE_DAY:{
-                //get weather icon and set grey image
-                viewHolder.iconView.setImageResource(Utility.getIconResourceForWeatherCondition(
-                        weatherId));
+//            case VIEW_TYPE_FUTURE_DAY:{
+//                //get weather icon and set grey image
+//                viewHolder.iconView.setImageResource(Utility.getIconResourceForWeatherCondition(
+//                        weatherId));
+//                break;
+//            }
+            default: {
+                //get weather icon
+                fallbackIconId = Utility.getIconResourceForWeatherCondition(weatherId);
                 break;
             }
         }
+
+        Glide.with(mContext)
+                .load(Utility.getArtUrlForWeatherCondition(mContext, weatherId))
+                .error(fallbackIconId)
+                .crossFade()
+                .into(viewHolder.iconView);
 
         // Read date from cursor
         long dateInMillis = cursor.getLong(ForecastFragment.COL_WEATHER_DATE);
